@@ -49,9 +49,15 @@ def create_app(config):
         competition = [c for c in competitions if c['name'] == request.form['competition']][0]
         club = [c for c in clubs if c['name'] == request.form['club']][0]
         placesRequired = int(request.form['places'])
+        
+        # fix bug 
         if int(placesRequired) > int(club['points']):
             flash("You do not have enough club points")
+        # fix bug clubs should not be able to use more than 12 places
+        elif int(placesRequired) > 12:
+            flash("You cannot request more than 12 places for a competition")
         else:
+            # fix bug point updates are not reflected
             competition['numberOfPlaces'] = int(competition['numberOfPlaces'])-placesRequired
             club['points'] = int(club['points']) - int(placesRequired)
             club['points'] = str(club['points'])
