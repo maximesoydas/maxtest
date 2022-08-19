@@ -6,7 +6,7 @@ def create_app(config):
     app = Flask(__name__)
     app.config.from_object(config)
     app.secret_key = 'something_special'
-    
+
     @app.route('/')
     def index():
         return render_template('index.html')
@@ -56,11 +56,14 @@ def create_app(config):
         # fix bug clubs should not be able to use more than 12 places
         elif int(placesRequired) > 12:
             flash("You cannot request more than 12 places for a competition")
+        elif int(competition['numberOfPlaces']) < 1:
+            flash("This Competition has no more places")
         else:
             # fix bug point updates are not reflected
             competition['numberOfPlaces'] = int(competition['numberOfPlaces'])-placesRequired
             club['points'] = int(club['points']) - int(placesRequired)
             club['points'] = str(club['points'])
+        
             with open('clubs.json', "w") as clubjson:
                 clubs_dict = json.dumps({"clubs":clubs}, indent=1)
                 clubjson.write(clubs_dict)    
@@ -70,7 +73,7 @@ def create_app(config):
                 competitionjson.write(competitions_dict)
                 flash('Great-booking complete!')
 
-        return render_template('welcome.html', club=club, competitions=competitions)
+        return render_template('welcome.html', club=club, competitions=competitions,clubs=clubs)
 
 
 
