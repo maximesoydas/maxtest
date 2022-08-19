@@ -21,7 +21,7 @@ def create_app(config):
             # list all clubs, if the club requested in the form corresponds to our json file's clubs we add corresponding clubs to a list,
             # we then define our current club variable to the the first club in the list
             club = [club for club in clubs if club['email'] == request.form['email']][0]
-            return render_template('welcome.html',club=club,competitions=competitions)
+            return render_template('welcome.html',club=club,competitions=competitions,clubs=clubs)
         except IndexError:
             return f"<h3 style='color:red;'> {email} is not a valid email (does not belong to any registered clubs)</h3><a href='/'>return</a>"
             
@@ -75,7 +75,10 @@ def create_app(config):
 
 
     # TODO: Add route for points display
-
+    @app.route('/displayPoints')
+    def displayPoints():
+        
+        return render_template('points.html', clubs=clubs, competitions=competitions)
 
     @app.route('/logout')
     def logout():
