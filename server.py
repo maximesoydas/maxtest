@@ -16,11 +16,12 @@ def create_app(config):
     cache.init_app(app)
     
     date_time = datetime.datetime.now()
-    date_time = date_time.strftime("%d/%m/%Y")
+    date_time = date_time.strftime("%Y-%m-%d %H:%M:%S")
 
     @app.route('/')
     def index():
         cache.clear()
+        print(date_time)
         return render_template('index.html')
 
     # called by the login form,
@@ -35,7 +36,7 @@ def create_app(config):
             # list all clubs, if the club requested in the form corresponds to our json file's clubs we add corresponding clubs to a list,
             # we then define our current club variable to the the first club in the list
             club = [club for club in clubs if club['email'] == request.form['email']][0]
-            return render_template('welcome.html',club=club,competitions=competitions,clubs=clubs)
+            return render_template('welcome.html',club=club,competitions=competitions,clubs=clubs, date_time=date_time)
         except IndexError:
             return f"<h3 style='color:red;'> {email} is not a valid email (does not belong to any registered clubs)</h3><a href='/'>return</a>"
             
@@ -52,7 +53,7 @@ def create_app(config):
             return render_template('booking.html',club=foundClub,competition=foundCompetition)
         else:
             flash("Something went wrong-please try again")
-            return render_template('welcome.html', club=club, competitions=competitions)
+            return render_template('welcome.html', club=club, competitions=competitions, date_time=date_time)
 
 
     # digest the booking.html form
@@ -86,7 +87,7 @@ def create_app(config):
                 competitionjson.write(competitions_dict)
                 flash('Great-booking complete!')
 
-        return render_template('welcome.html', club=club, competitions=competitions,clubs=clubs)
+        return render_template('welcome.html', club=club, competitions=competitions,clubs=clubs, date_time=date_time)
 
 
 
@@ -120,7 +121,7 @@ def create_app(config):
             if club == None:
                 return redirect(url_for('index'))
             
-            return render_template('welcome.html',club=club,competitions=competitions,clubs=clubs)
+            return render_template('welcome.html',club=club,competitions=competitions,clubs=clubs, date_time=date_time)
         except IndexError:
           return redirect(url_for('index'))
             
