@@ -5,7 +5,7 @@
     <title>Display Points| GUDLFT Registration</title>
 </head>
 <body>
-    <a href="{{url_for('logout')}}">Logout</a><a href="{{url_for('showSummary')}}">Homepage</a>
+    <a href="{{url_for('logout')}}">Logout</a></br><a href="{{url_for('homepage')}}">Homepage</a>
     {% with messages = get_flashed_messages() %}
     {% if messages %}
         <ul>

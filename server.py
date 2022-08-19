@@ -1,14 +1,26 @@
 import json
 from xml.dom import ValidationErr
 from flask import Flask,render_template,request,redirect,flash,url_for
+import datetime
+
+from pathlib import Path
+from flask_caching import Cache
+# Instantiate the cache
+cache = Cache()
 
 def create_app(config):
     app = Flask(__name__)
     app.config.from_object(config)
+    app.config["CACHE_TYPE"]= 'simple'
     app.secret_key = 'something_special'
+    cache.init_app(app)
+    
+    date_time = datetime.datetime.now()
+    date_time = date_time.strftime("%d/%m/%Y")
 
     @app.route('/')
     def index():
+        cache.clear()
         return render_template('index.html')
 
     # called by the login form,
@@ -16,6 +28,8 @@ def create_app(config):
     # and list competitions
     @app.route('/showSummary',methods=['POST'])
     def showSummary():
+        cache.clear()
+        cache.set("email", request.form['email'])
         email = request.form['email']
         try:
             # list all clubs, if the club requested in the form corresponds to our json file's clubs we add corresponding clubs to a list,
@@ -44,12 +58,11 @@ def create_app(config):
     # digest the booking.html form
     # deduct available places by the requested form number
     # deduct club's points by the requested form number
-    @app.route('/purchasePlaces',methods=['POST'])
+    @app.route('/purchasePlaces',methods=['POST','GET'])
     def purchasePlaces():
         competition = [c for c in competitions if c['name'] == request.form['competition']][0]
         club = [c for c in clubs if c['name'] == request.form['club']][0]
         placesRequired = int(request.form['places'])
-        
         # fix bug 
         if int(placesRequired) > int(club['points']):
             flash("You do not have enough club points")
@@ -78,15 +91,39 @@ def create_app(config):
 
 
     # TODO: Add route for points display
-    @app.route('/displayPoints')
+    @app.route('/displayPoints',methods=['GET'])
     def displayPoints():
+        print('TESTESTESTSETE')
+        email = cache.get("email")
+        print(email)
+        try:
+            club = [club for club in clubs if club['email'] == email][0]
+            if club == None:
+                return redirect(url_for('index'))
+            return render_template('points.html', clubs=clubs, competitions=competitions)
+
+        except IndexError:
+            return redirect(url_for('index'))
+            
         
-        return render_template('points.html', clubs=clubs, competitions=competitions)
 
     @app.route('/logout')
     def logout():
+        cache.clear()
         return redirect(url_for('index'))
-
+    
+    @app.route('/showSummary')
+    def homepage():
+        email = cache.get("email")
+        try:
+            club = [club for club in clubs if club['email'] == email][0]
+            if club == None:
+                return redirect(url_for('index'))
+            
+            return render_template('welcome.html',club=club,competitions=competitions,clubs=clubs)
+        except IndexError:
+          return redirect(url_for('index'))
+            
     return app
 
 
