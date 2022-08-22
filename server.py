@@ -2,7 +2,7 @@ import json
 from xml.dom import ValidationErr
 from flask import Flask,render_template,request,redirect,flash,url_for
 import datetime
-
+import urllib.error as urllib2
 from pathlib import Path
 from flask_caching import Cache
 # Instantiate the cache
@@ -11,7 +11,7 @@ cache = Cache()
 def create_app(config):
     app = Flask(__name__)
     app.config.from_object(config)
-    app.config["CACHE_TYPE"]= 'simple'
+    app.config["CACHE_TYPE"]= 'SimpleCache'
     app.secret_key = 'something_special'
     cache.init_app(app)
     
@@ -59,7 +59,7 @@ def create_app(config):
     # digest the booking.html form
     # deduct available places by the requested form number
     # deduct club's points by the requested form number
-    @app.route('/purchasePlaces',methods=['POST','GET'])
+    @app.route('/purchasePlaces',methods=['POST'])
     def purchasePlaces():
         competition = [c for c in competitions if c['name'] == request.form['competition']][0]
         club = [c for c in clubs if c['name'] == request.form['club']][0]
@@ -72,6 +72,8 @@ def create_app(config):
             flash("You cannot request more than 12 places for a competition")
         elif int(competition['numberOfPlaces']) < 1:
             flash("This Competition has no more places")
+        elif date_time > competition['date']:
+             flash("This Competition has expired")
         else:
             # fix bug point updates are not reflected
             competition['numberOfPlaces'] = int(competition['numberOfPlaces'])-placesRequired
@@ -92,15 +94,20 @@ def create_app(config):
 
 
     # TODO: Add route for points display
-    @app.route('/displayPoints',methods=['GET'])
+    @app.route('/displayPoints',methods=['GET','POST'])
     def displayPoints():
-        print('TESTESTESTSETE')
-        email = cache.get("email")
-        print(email)
+        if request.method=='POST':
+            email = request.form['email']
+            print(request.form['email'])
+            # email = request.form['email']
+        else:
+            email = cache.get("email")
         try:
             club = [club for club in clubs if club['email'] == email][0]
             if club == None:
                 return redirect(url_for('index'))
+            # if request.form('email'):
+            #     print(request.form['email'])
             return render_template('points.html', clubs=clubs, competitions=competitions)
 
         except IndexError:

@@ -3,17 +3,22 @@
   {
    "name": "Simply Lift",
    "email": "john@simplylift.co",
-   "points": "5"
+   "points": "19890"
   },
   {
    "name": "Iron Temple",
    "email": "admin@irontemple.com",
-   "points": "0"
+   "points": "39866"
   },
   {
    "name": "She Lifts",
    "email": "kate@shelifts.co.uk",
-   "points": "2"
+   "points": "12"
+  },
+  {
+   "name": "NO POINTS NO GAIN",
+   "email": "points@gain.com",
+   "points": "0"
   }
  ]
 }
