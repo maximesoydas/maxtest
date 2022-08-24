@@ -5,7 +5,7 @@
     <title>Summary | GUDLFT Registration</title>
 </head>
 <body>
-        <h2>Welcome, {{club['email']}} </h2><a href="{{url_for('logout')}}">Logout</a>
+        <h2>Welcome, {{club['email']}} </h2><a name='_logout' href="{{url_for('logout')}}">Logout</a>
     {% with messages = get_flashed_messages() %}
     {% if messages %}
         <ul>
@@ -14,7 +14,7 @@
         {% endfor %}
        </ul>
     {% endif %}
-    Points available: {{club['points']}}
+    <p name='club_points'>Points available: {{club['points']}} </p>
     <hr />
     <h3>Competitions:</h3>
     <ul>
@@ -22,11 +22,11 @@
         <li>
             {{comp['name']}}<br />
             Date: {{comp['date']}}</br>
-            Number of Places: {{comp['numberOfPlaces']}}
+            <p name="{{comp['name']}}_points">Number of Places: {{comp['numberOfPlaces']}}</p>
             {% if comp['date'] < date_time %}
             <p style='color:red';> Competition has expired </p>
             {% elif comp['numberOfPlaces']|int >0 %}
-            <a href="{{ url_for('book',competition=comp['name'],club=club['name']) }}">Book Places</a>
+            <a name="{{comp['name']}}_places" href="{{ url_for('book',competition=comp['name'],club=club['name']) }}">Book Places</a>
             {% elif comp['numberOfPlaces']|int <0 %}
             <p style='color:red';>">Competition is full</p>
             {% endif %}
