@@ -8,9 +8,9 @@ from flask_caching import Cache
 # Instantiate the cache
 cache = Cache()
 
-def create_app(config):
+def create_app():
     app = Flask(__name__)
-    app.config.from_object(config)
+    # app.config.from_object(config)
     app.config["CACHE_TYPE"]= 'SimpleCache'
     app.secret_key = 'something_special'
     cache.init_app(app)
