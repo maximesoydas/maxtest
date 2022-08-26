@@ -13,12 +13,12 @@
   {
    "name": "Summer Madness",
    "date": "2023-08-22 13:30:00",
-   "numberOfPlaces": "0"
+   "numberOfPlaces": "10"
   },
   {
    "name": "Winter Fitness",
    "date": "2022-12-22 13:30:00",
-   "numberOfPlaces": "0"
+   "numberOfPlaces": "6"
   }
  ]
 }
